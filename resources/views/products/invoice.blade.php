@@ -9,15 +9,16 @@
     <link href="{{asset('/css/bootstrap.min.css')}}" rel="stylesheet">
     <style>
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
+            border: 2px solid #000000;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="card-header bg-primary">
-            <h3 class="text-white text-center">Billing Page</h3>
+        <div class="row">
+            <h5 class="mb-1 text-center">Billing Page</h5>
         </div>
         <div class="row">
             <div class="col-5 mb-3">
@@ -32,7 +33,7 @@
             <div class="col-12 mb-3">
 
                 <div class="form-group">
-                    <strong>Bill section:</strong>
+                    <strong>Bill section</strong>
                 </div>
 
                 @if (Session::has('success'))
@@ -44,7 +45,6 @@
                 <table class="table table-bordered mt-3">
                     <thead>
                         <tr>
-
                             <th scope="col">Product ID</th>
                             <th scope="col">Unit Price</th>
                             <th scope="col">Quantity</th>
@@ -58,20 +58,16 @@
                         @if(!empty($invoiceData))
 
                             @foreach($invoiceData as $key => $product)
+
                                 @if(is_int($key))
                                     <tr>
-                                        <th scope="row"><input type="text" value="{{$product['productID']}}" readonly
-                                                class="form-control" /></th>
+                                        <th scope="row"><input type="text" value="{{$product['productID']}}" readonly class="form-control" /></th>
                                         <td><input type="text" value="{{$product['price']}}" readonly class="form-control" /></td>
-                                        <td><input type="text" value="{{$product['quantity']}}" readonly class="form-control" />
-                                        </td>
-                                        <td><input type="text" value="{{$product['purchased-price']}}" readonly
-                                                class="form-control" /></td>
+                                        <td><input type="text" value="{{$product['quantity']}}" readonly class="form-control" /></td>
+                                        <td><input type="text" value="{{$product['purchased-price']}}" readonly class="form-control" /></td>
                                         <td><input type="text" value="{{$product['tax']}}" readonly class="form-control" /></td>
-                                        <td><input type="text" value="{{$product['tax-payable-item']}}" readonly
-                                                class="form-control" /></td>
-                                        <td><input type="text" value="{{$product['total-price']}}" readonly class="form-control" />
-                                        </td>
+                                        <td><input type="text" value="{{$product['tax-payable-item']}}" readonly class="form-control" /></td>
+                                        <td><input type="text" value="{{$product['total-price']}}" readonly class="form-control" /> </td>
                                     </tr>
                                 @endif
                             @endforeach

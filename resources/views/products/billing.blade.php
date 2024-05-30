@@ -9,15 +9,16 @@
     <link href="{{asset('/css/bootstrap.min.css')}}" rel="stylesheet">
     <style>
         .container {
-            max-width: 900px;
+            max-width: 1000px;
+            border: 2px solid #000000;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="card-header bg-primary">
-            <h3 class="text-white text-center">Billing Page</h3>
+        <div class="row">
+            <h5 class="mb-1 text-center">Billing Page</h5>
         </div>
         <form action="{{ route('invoice') }}" method="POST">
             @csrf
@@ -39,7 +40,7 @@
             @endsession
 
             <div class="row">
-                <div class="col-10 mb-2 mt-1">
+                <div class="col-6 mb-2 mt-1">
                     <div class="form-group">
                         <strong>Email<span style="color:red">*</span></strong>
                         <input type="text" required name="email" class="form-control" placeholder="Email"
@@ -52,7 +53,7 @@
             </div>
 
             <div class="row">
-                <div class="col-10 mb-1">
+                <div class="col-12 mb-1">
                     <table class="table table-bordered" id="addRemove">
                         <tr>
                             <th>ProductID<span style="color:red">*</span></th>
@@ -131,7 +132,8 @@
             </div>
             <div class="row mb-2">
                 <div class="col-3 text-end"><strong>Cash Paid by customer</strong></div>
-                <div class="col-3"> <input type="number" class="form-control paid-amount"></div>
+                <div class="col-3"> <input type="text" class="form-control paid-amount" placeholder="Amount" readonly>
+                </div>
             </div>
             <input type="hidden" name="paid_amount" class="form-control" id="paid-amount">
             <div class="row mb-2">
@@ -146,6 +148,71 @@
 <!-- JavaScript -->
 <script src="{{asset('/js/jquery-3.5.1.min.js')}}"></script>
 <script src="{{asset('/js/bootstrap.bundle.min.js')}}"></script>
-<script src="{{asset('/js/customscript.js')}}"></script>
+
+<script type="text/javascript">
+
+    //Add more product dynamic
+    var i = 0;
+    $("#dynamic-ar").click(function () {
+        ++i;
+        $("#addRemove").append('<tr class="product product-' + i + '" data-row="' + i + '"><td><input type="text" name="addMoreProduct[' + i +
+            '][productID]" placeholder="Enter ProductID" class="form-control pid-' + i + '" /></td><td><input type="number" name="addMoreProduct[' + i +
+            '][quantity]" placeholder="Enter quantity" min="0" class="form-control qty-' + i + '" /><span class="error-' + i + '" style="color:red"></span></td><td><button type="button" class="btn btn-outline-danger remove-input-field">Delete</button></td></tr>'
+        );
+    });
+
+    // Remove dynamic row
+    $(document).on('click', '.remove-input-field', function () {
+        $(this).parents('tr').remove();
+    });
+
+    // Validation for available stocks
+    $(document.body).on('change keyup', '.product', function (event) {
+        let currentRow = $(this).data('row');
+
+        let productID = $('.pid-' + currentRow).val();
+        let qtyVal = $('.qty-' + currentRow).val();
+
+        var url = "{{route('product-quantity', ':id')}}";   
+    url = url.replace(':id', productID);
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function (availableStocks) {
+
+                $('.qty-' + currentRow).prop('max', availableStocks);
+                $('.error-' + currentRow).text("");
+                if (parseInt(qtyVal) > parseInt(availableStocks)) {
+                    $('.error-' + currentRow).text("Available stocks " + availableStocks + " only");
+                }
+
+            }
+        });
+
+    });
+
+    // Adding denominations values
+    $(document).ready(function () {
+        var total = '';
+        $('.denominations').blur(function () {
+            total = 0;
+            $('.denominations').each(function () {
+                quantity = Number($(this).val());
+                denom = Number($(this).data('denom'));
+                total += quantity * denom;
+            });
+            $('.paid-amount').val(total);
+        });
+        $('.generate-bill').click(function (e) {
+            $('#paid-amount').val($('.paid-amount').val());
+        });
+
+    });
+</script>
 
 </html>

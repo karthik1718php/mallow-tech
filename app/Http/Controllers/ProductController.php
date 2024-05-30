@@ -47,17 +47,13 @@ class ProductController extends Controller
 
         $invoiceData['email'] = $request->email;
         $invoiceData['paidAmountByCustomer'] = $request->paid_amount ?? 0;
-
         $totalprice = array_sum(array_column($invoiceData, 'total-price'));
 
         if ($request->paid_amount >= $totalprice) {
-
             SendEmailJob::dispatch($invoiceData);
-
             return view('products.invoice', compact('invoiceData'))->with('success', 'Invoice sent');
 
         } else {
-
             return redirect()->back()->with('error', 'Purchased cost is more higher than customer paid amount');
         }
 
@@ -65,9 +61,7 @@ class ProductController extends Controller
 
     public function productQuantity($pid)
     {
-
         $quantity = $this->product::where('productID', $pid)->value('available_stocks');
-
         return response()->json($quantity);
 
     }
